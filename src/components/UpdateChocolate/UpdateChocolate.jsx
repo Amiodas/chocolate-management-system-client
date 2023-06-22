@@ -1,9 +1,13 @@
 import React from "react";
 import { Form } from "react-bootstrap";
+import { useLoaderData } from "react-router-dom";
 import Swal from "sweetalert2";
 
-const NewChocolate = () => {
-  const handleAddChocolate = (event) => {
+const UpdateChocolate = () => {
+  const chocolates = useLoaderData();
+  const { _id, name, image, country, category } = chocolates;
+  console.log(_id);
+  const handleUpdateChocolate = (event) => {
     event.preventDefault();
     const form = event.target;
 
@@ -12,44 +16,45 @@ const NewChocolate = () => {
     const country = form.country.value;
     const category = form.category.value;
 
-    console.log(name, image, country, category);
-
-    const newChocolate = {
+    const updatedChocolate = {
       name,
       image,
       country,
       category,
     };
-    fetch("http://localhost:5000/chocolates", {
-      method: "POST",
+
+    console.log(updatedChocolate);
+
+    fetch(`http://localhost:5000/chocolates/${_id}`, {
+      method: "PUT",
       headers: {
         "content-type": "application/json",
       },
-      body: JSON.stringify(newChocolate),
+      body: JSON.stringify(updatedChocolate),
     })
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
-        if (data.insertedId) {
+        if (data.modifiedCount > 0) {
           Swal.fire({
             title: "Successful!",
-            text: "Great you are added new chocolate",
+            text: "Great you updated the chocolate",
             icon: "success",
             confirmButtonText: "Good day!!!",
           });
         }
       });
   };
-
   return (
     <div className="container bg-light mt-5 p-5">
-      <h4>Create New Chocolate</h4>
+      <h4>Update Chocolate</h4>
       <div className="mt-5">
-        <Form onSubmit={handleAddChocolate}>
+        <Form onSubmit={handleUpdateChocolate}>
           <Form.Label>Name:</Form.Label>
           <Form.Control
             type="text"
             name="name"
+            defaultValue={name}
             className="mb-4"
             placeholder="Name"
           />
@@ -57,6 +62,7 @@ const NewChocolate = () => {
           <Form.Control
             type="text"
             name="image"
+            defaultValue={image}
             className="mb-4"
             placeholder="Image"
           />
@@ -64,6 +70,7 @@ const NewChocolate = () => {
           <Form.Control
             type="text"
             name="country"
+            defaultValue={country}
             className="mb-4"
             placeholder="Country Name"
           />
@@ -71,6 +78,7 @@ const NewChocolate = () => {
           <Form.Control
             type="text"
             name="category"
+            defaultValue={category}
             placeholder="Category Name"
           />
           <Form.Control className="btn btn-success mt-5" type="Submit" />
@@ -80,4 +88,4 @@ const NewChocolate = () => {
   );
 };
 
-export default NewChocolate;
+export default UpdateChocolate;
